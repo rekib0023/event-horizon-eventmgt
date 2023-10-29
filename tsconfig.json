@@ -10,6 +10,7 @@
     "paths": {
       "@models/*": ["src/models/*"],
       "@controllers/*": ["src/controllers/*"],
+      "@middlewares/*": ["src/middlewares/*"],
       "@routes/*": ["src/routes/*"],
       "@utils/*": ["src/utils/*"]
     }
