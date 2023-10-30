@@ -6,7 +6,7 @@ const router = express.Router();
 
 const eventController = new EventController();
 
-router.get("/events", requireAuth, eventController.getEvents);
+router.get("/events/search", requireAuth, eventController.searchEvents);
 router.post("/events", requireAuth, eventController.createEvent);
 router.get("/events/:eventId", requireAuth, eventController.getEvent);
 router.put("/events/:eventId", requireAuth, eventController.updateEvent);
@@ -16,7 +16,12 @@ router.get(
   requireAuth,
   eventController.viewAttendees
 );
-router.post('/events/:eventId/register', requireAuth, eventController.register);
-
+router.post(
+  "/events/:eventId/register",
+  requireAuth,
+  eventController.registerEvent
+);
+router.post("/events/categories", requireAuth, eventController.getCategories);
+router.post("/events/locations", requireAuth, eventController.getLocations);
 
 export { router as eventRoutes };

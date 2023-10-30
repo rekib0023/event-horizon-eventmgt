@@ -7,15 +7,26 @@ import { Request, Response } from "express";
 export class EventController {
   async createEvent(req: Request, res: Response) {
     try {
-      const { name, description, location, date, time, images } = req.body;
+      const {
+        name,
+        description,
+        location,
+        startDate,
+        endDate,
+        time,
+        images,
+        categories,
+      } = req.body;
 
       const newEvent = new Event({
         name,
         description,
         location,
-        date,
+        startDate,
+        endDate,
         time,
         images,
+        categories,
         createdBy: req.currentUser!._id,
       });
 
@@ -28,11 +39,55 @@ export class EventController {
     }
   }
 
-  async getEvents(req: Request, res: Response) {
+  async searchEvents(req: Request, res: Response) {
     try {
-      const events = await Event.find()
-        .populate("createdBy", "firstName lastName email userId")
-        .populate("attendees", "firstName lastName email userId");
+      const {
+        category,
+        location,
+        startDate,
+        endDate,
+        status,
+        sort = "date",
+        page = 1,
+        limit = 10,
+      } = req.query;
+
+      const query: any = {};
+      if (category) {
+        query.categories = category;
+      }
+      if (location) {
+        query.location = location;
+      }
+      if (status) {
+        query.status = status;
+      }
+      if (startDate) {
+        query.startDate = { $gte: new Date(startDate as string) };
+      }
+      if (endDate) {
+        query.endDate = { $lte: new Date(endDate as string) };
+      }
+
+      const options = {
+        skip: (Number(page) - 1) * Number(limit),
+        limit: Number(limit),
+        sort: {},
+        populate: [
+          { path: "createdBy", select: "firstName lastName email userId" },
+          { path: "attendees", select: "firstName lastName email userId" },
+        ],
+      };
+
+      if (sort) {
+        if (sort === "date") {
+          options.sort = { startDate: 1 };
+        } else if (sort === "popularity") {
+          options.sort = { "attendees.length": -1 };
+        }
+      }
+
+      const events = await Event.find(query, null, options);
 
       if (!events) {
         throw new ServerError("No events found", 404);
@@ -65,8 +120,6 @@ export class EventController {
     } catch (err) {
       logger.error("Error fetching event:", err);
       if (err instanceof ServerError) {
-        console.log('a')
-        console.log(err.serializeErrors())
         return res
           .status(err.statusCode)
           .send({ errors: err.serializeErrors() });
@@ -157,7 +210,7 @@ export class EventController {
     }
   }
 
-  async register(req: Request, res: Response) {
+  async registerEvent(req: Request, res: Response) {
     try {
       const { eventId } = req.params;
       const userId = req.currentUser!._id;
@@ -194,6 +247,26 @@ export class EventController {
           .status(err.statusCode)
           .send({ errors: err.serializeErrors() });
       }
+      return res.status(500).send({ error: "Internal Server Error" });
+    }
+  }
+
+  async getCategories(req: Request, res: Response) {
+    try {
+      const categories = await Event.distinct("categories");
+      res.status(200).send(categories);
+    } catch (err) {
+      logger.error("Error fetching categories:", err);
+      return res.status(500).send({ error: "Internal Server Error" });
+    }
+  }
+
+  async getLocations(req: Request, res: Response) {
+    try {
+      const locations = await Event.distinct("location");
+      res.status(200).send(locations);
+    } catch (err) {
+      logger.error("Error fetching locations:", err);
       return res.status(500).send({ error: "Internal Server Error" });
     }
   }
