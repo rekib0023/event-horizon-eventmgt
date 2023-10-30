@@ -1,14 +1,24 @@
 import { Document, Schema, model } from "mongoose";
 
+enum EventStatus {
+  UPCOMING = "upcoming",
+  ONGOING = "ongoing",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
+}
+
 interface EventAttributes {
   name: string;
   description: string;
   location: string;
-  date: Date;
+  startDate: Date;
+  endDate: Date;
   time: string;
   images: string[];
   createdBy: Schema.Types.ObjectId;
   attendees: Schema.Types.ObjectId[];
+  categories: string[];
+  status: string;
 }
 
 interface EventDocument extends Document, EventAttributes {}
@@ -27,7 +37,11 @@ const eventSchema = new Schema<EventDocument>(
       type: String,
       required: true,
     },
-    date: {
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
       type: Date,
       required: true,
     },
@@ -47,12 +61,20 @@ const eventSchema = new Schema<EventDocument>(
         ref: "User",
       },
     ],
+    categories: [String],
+    status: {
+      type: String,
+      required: true,
+      enum: Object.values(EventStatus),
+      default: EventStatus.UPCOMING,
+    },
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 
 const Event = model<EventDocument>("Event", eventSchema);
 
-export { Event, EventDocument };
+export { Event, EventAttributes, EventStatus };

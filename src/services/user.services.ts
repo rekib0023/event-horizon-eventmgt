@@ -2,6 +2,7 @@ import { User, UserDocument } from "@models/user.model";
 
 async function createUser(userAttributes: UserDocument) {
   try {
+    console.log("Creating user:", userAttributes)
     const user = new User({
       userId: userAttributes.id,
       firstName: userAttributes.firstName,
@@ -11,8 +12,6 @@ async function createUser(userAttributes: UserDocument) {
     });
 
     await user.save();
-
-    console.log("User created successfully:", user);
   } catch (err) {
     console.error("Error creating user:", err);
   }

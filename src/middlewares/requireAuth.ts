@@ -1,6 +1,6 @@
-import { ServerError } from "@middlewares/errorHandler";
 import { User, UserDocument } from "@models/user.model";
 import { NextFunction, Request, Response } from "express";
+import { ServerError } from "./errorHandler";
 
 declare global {
   namespace Express {
@@ -32,7 +32,10 @@ export const requireAuth = async (
     req.currentUser = user;
     next();
   } catch (err) {
-    console.log(err)
-    throw new ServerError("Not authorized", 401);
+    console.log(err);
+    if (err instanceof ServerError) {
+      return res.status(err.statusCode).send({ errors: err.serializeErrors() });
+    }
+    return res.status(401).send({ error: "Not authorized" });
   }
 };

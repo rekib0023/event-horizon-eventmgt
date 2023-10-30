@@ -16,10 +16,7 @@ router.get(
   requireAuth,
   eventController.viewAttendees
 );
-router.post(
-  "/events/:eventId/attend",
-  requireAuth,
-  eventController.attendEvent
-);
+router.post('/events/:eventId/register', requireAuth, eventController.register);
+
 
 export { router as eventRoutes };
