@@ -1,9 +1,9 @@
-import { User, UserAttributes } from "@models/user.model";
+import { User, UserDocument } from "@models/user.model";
 
-async function createUser(userAttributes: UserAttributes) {
+async function createUser(userAttributes: UserDocument) {
   try {
     const user = new User({
-      userId: userAttributes.userId,
+      userId: userAttributes.id,
       firstName: userAttributes.firstName,
       lastName: userAttributes.lastName,
       userName: userAttributes.userName,

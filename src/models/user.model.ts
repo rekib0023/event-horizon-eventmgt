@@ -13,7 +13,7 @@ interface UserDocument extends Document, UserAttributes {}
 
 const userSchema = new Schema<UserDocument>(
   {
-    id: {
+    userId: {
       type: Number,
       required: true,
     },

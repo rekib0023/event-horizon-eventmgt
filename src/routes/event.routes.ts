@@ -8,7 +8,9 @@ const eventController = new EventController();
 
 router.get("/events", requireAuth, eventController.getEvents);
 router.post("/events", requireAuth, eventController.createEvent);
+router.get("/events/:eventId", requireAuth, eventController.getEvent);
 router.put("/events/:eventId", requireAuth, eventController.updateEvent);
+router.delete("/events/:eventId", requireAuth, eventController.deleteEvent);
 router.get(
   "/events/:eventId/attendees",
   requireAuth,

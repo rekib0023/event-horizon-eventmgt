@@ -12,13 +12,6 @@ const start = async () => {
   }
 
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("Connected to MongoDB");
-  } catch (err) {
-    console.error("Error connecting to MongoDB", err);
-  }
-
-  try {
     await natsWrapper.connect(process.env.NATS_SERVER!);
 
     natsWrapper.subscribe("user.created", (userAttributes: UserDocument) => {
@@ -28,10 +21,17 @@ const start = async () => {
     console.error("Error connecting to NATS", err);
   }
 
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("Connected to MongoDB");
+
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  } catch (err) {
+    console.error("Error connecting to MongoDB", err);
+  }
 };
 
 start();
