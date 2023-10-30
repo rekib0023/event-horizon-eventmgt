@@ -1,3 +1,5 @@
+import { UserDocument } from "@models/user.model";
+import { createUser } from "@services/user.services";
 import { natsWrapper } from "@utils/natsWrapper";
 import { configDotenv } from "dotenv";
 import mongoose from "mongoose";
@@ -18,6 +20,10 @@ const start = async () => {
 
   try {
     await natsWrapper.connect(process.env.NATS_SERVER!);
+
+    natsWrapper.subscribe("user.created", (userAttributes: UserDocument) => {
+      createUser(userAttributes);
+    });
   } catch (err) {
     console.error("Error connecting to NATS", err);
   }

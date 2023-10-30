@@ -4,6 +4,7 @@ interface UserAttributes {
   userId: number;
   firstName: string;
   lastName: string;
+  userName: string;
   email: string;
   events: Schema.Types.ObjectId[];
 }
@@ -12,7 +13,7 @@ interface UserDocument extends Document, UserAttributes {}
 
 const userSchema = new Schema<UserDocument>(
   {
-    userId: {
+    id: {
       type: Number,
       required: true,
     },
@@ -21,6 +22,10 @@ const userSchema = new Schema<UserDocument>(
       required: true,
     },
     lastName: {
+      type: String,
+      required: true,
+    },
+    userName: {
       type: String,
       required: true,
     },
@@ -43,4 +48,4 @@ const userSchema = new Schema<UserDocument>(
 
 const User = model<UserDocument>("User", userSchema);
 
-export { User };
+export { User, UserAttributes, UserDocument };

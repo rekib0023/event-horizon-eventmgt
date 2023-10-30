@@ -1,19 +1,16 @@
-import { Request, Response, NextFunction } from "express";
-
-interface UserPayload {
-  id: string;
-  email: string;
-}
+import { ServerError } from "@middlewares/errorHandler";
+import { User, UserDocument } from "@models/user.model";
+import { NextFunction, Request, Response } from "express";
 
 declare global {
   namespace Express {
     interface Request {
-      currentUser?: UserPayload;
+      currentUser?: UserDocument;
     }
   }
 }
 
-export const requireAuth = (
+export const requireAuth = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -26,12 +23,16 @@ export const requireAuth = (
   }
 
   try {
-    req.currentUser = {
-      id: userID,
-      email: userEmail,
-    } as UserPayload;
+    const user = await User.findOne({ userId: userID, email: userEmail });
+
+    if (!user) {
+      throw new ServerError("User not found", 404);
+    }
+
+    req.currentUser = user;
     next();
   } catch (err) {
-    res.status(401).send({ error: "Not authorized" });
+    console.log(err)
+    throw new ServerError("Not authorized", 401);
   }
 };

@@ -1,4 +1,4 @@
-import { Document, Schema, model } from 'mongoose';
+import { Document, Schema, model } from "mongoose";
 
 interface EventAttributes {
   name: string;
@@ -8,6 +8,7 @@ interface EventAttributes {
   time: string;
   images: string[];
   createdBy: Schema.Types.ObjectId;
+  attendees: Schema.Types.ObjectId[];
 }
 
 interface EventDocument extends Document, EventAttributes {}
@@ -37,15 +38,21 @@ const eventSchema = new Schema<EventDocument>(
     images: [String],
     createdBy: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
+    attendees: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-const Event = model<EventDocument>('Event', eventSchema);
+const Event = model<EventDocument>("Event", eventSchema);
 
-export { Event };
+export { Event, EventDocument };

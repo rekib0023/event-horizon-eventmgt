@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "typeRoots": ["src/types", "./node_modules/@types"],
     "target": "es6",
     "module": "commonjs",
     "esModuleInterop": true,
@@ -12,7 +13,8 @@
       "@controllers/*": ["src/controllers/*"],
       "@middlewares/*": ["src/middlewares/*"],
       "@routes/*": ["src/routes/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@services/*": ["src/services/*"]
     }
   },
   "include": ["src/**/*.ts"],
