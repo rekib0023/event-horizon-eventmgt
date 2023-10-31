@@ -2,7 +2,9 @@ import { ServerError } from "@middlewares/errorHandler";
 import { Event } from "@models/event.model";
 import { User } from "@models/user.model";
 import { logger } from "@utils/logger";
+import { natsWrapper } from "@utils/natsWrapper";
 import { Request, Response } from "express";
+import { EventEmail, EventRegistered } from "@interfaces";
 
 export class EventController {
   async createEvent(req: Request, res: Response) {
@@ -236,6 +238,30 @@ export class EventController {
 
       await event.save();
       await user.save();
+
+      const registerEventEmail: EventEmail = {
+        EmailType: "confirmation",
+        Recipients: [user.email],
+        Subject: "Confirmation Email",
+        Data: {
+          EventName: event.name,
+          Name: user.userName,
+          EventDate: event.startDate,
+        },
+      };
+      natsWrapper.publish("email.send", registerEventEmail);
+
+      const eventRegistered: EventRegistered = {
+        user: {
+          email: user.email,
+          name: user.userName,
+        },
+        event: {
+          name: event.name,
+          date: event.startDate,
+        },
+      };
+      natsWrapper.publish("event.registered", eventRegistered);
 
       res
         .status(200)

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "typeRoots": ["src/types", "./node_modules/@types"],
+    "typeRoots": ["src/interfaces", "./node_modules/@types"],
     "target": "es6",
     "module": "commonjs",
     "esModuleInterop": true,
@@ -11,6 +11,7 @@
     "rootDir": "./",
     "outDir": "./dist",
     "paths": {
+      "@interfaces": ["src/interfaces/index.ts"],
       "@models/*": ["src/models/*"],
       "@controllers/*": ["src/controllers/*"],
       "@middlewares/*": ["src/middlewares/*"],
